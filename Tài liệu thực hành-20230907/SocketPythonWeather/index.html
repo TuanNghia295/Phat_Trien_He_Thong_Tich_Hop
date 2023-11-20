@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather WebSocket Client</title>
+    <link rel="shortcut icon" href="http://openweathermap.org/img/wn/10d@2x.png" type="image/x-icon">
+    <link rel="stylesheet" href="./assets/css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div id="root">
+        <div class="container">
+            <div class="main-section">
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon" onclick="searchWeather()"></i>
+                    <input type="text" name="search-city" id="search-input" placeholder="Enter location">
+                </div>
+                <div class="info-wrapper">
+                    <p class="city-name"></p>
+                    <p class="weather-state"></p>
+                   
+                    <p class="temperature">°C</p>
+                </div>
+            </div>
+            <div class="additional-section">
+                <div class="row">
+                    <div class="item">
+                        <div class="label">Mặt trời mọc</div>
+                        <div class="value sunrise"></div>
+                    </div>
+                    <div class="item">
+                        <div class="label">Mặt trời lặn</div>
+                        <div class="value sunset"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="item">
+                        <div class="label">Độ ẩm</div>
+                        <div class="value"><span class="humidity"></span>%</div>
+                    </div>
+                    <div class="item">
+                        <div class="label">Gió</div>
+                        <div class="value"><span class="wind-speed"></span> km/h</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+     const socket = new WebSocket("ws://localhost:2905");
+
+    socket.onmessage = function (event) {
+        const weatherInfo = document.getElementById("root");
+        const data = JSON.parse(event.data);
+        console.log(data);
+
+    // Kiểm tra xem trường 'location' có tồn tại trong dữ liệu không
+    if (data.location) {
+        weatherInfo.innerHTML = `<div class="container">
+            <div class="main-section">
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon" onclick="searchWeather()"></i>
+                    <input type="text" name="search-city" id="search-input" placeholder="Tìm kiếm thành phố...">
+                </div>
+                <div class="info-wrapper">
+                    <p class="city-name">${data.location.country}</p>
+                    <p class="weather-state">${data.current.condition.text}</p>
+                    <img src="${data.current.condition.icon}" alt="weather icon" class="weather-icon">
+                    <p class="temperature">${data.current.temp_c}°C</p>
+                </div>
+            </div>
+            <div class="additional-section">
+                <div class="row">
+                    <div class="item">
+                        <div class="label">Mặt trời mọc</div>
+                        <div class="value sunrise">${data.current.cloud}</div>
+                    </div>
+                    <div class="item">
+                        <div class="label">Mặt trời lặn</div>
+                        <div class="value sunset">${data.current.cloud}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="item">
+                        <div class="label">Độ ẩm</div>
+                        <div class="value"><span class="humidity">${data.current.humidity}</span>%</div>
+                    </div>
+                    <div class="item">
+                        <div class="label">Gió</div>
+                        <div class="value"><span class="wind-speed">${data.current.wind_kph}</span> km/h</div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    } else {
+        // Xử lý khi trường 'location' không tồn tại trong dữ liệu
+        console.error("Invalid data format: 'location' field is missing.");
+    }
+};
+
+function searchWeather() {
+    const searchInput = document.getElementById("search-input");
+    const location = searchInput.value;
+    socket.send(location);
+}
+
+    </script>
+</body>
+
+</html>

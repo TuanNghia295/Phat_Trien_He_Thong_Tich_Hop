@@ -11,7 +11,7 @@ try:
     # gửi dữ liệu vừa nhập tới server
     # encode: mã hóa kí tự khi gửi đi
     s.sendall(a.encode('utf8'))
-    # in dữ liệu trả về từ Server với tối đa 1024 bytes và giả mã
+    # in dữ liệu trả về từ Server với tối đa 1024 bytes và giải mã
     print(s.recv(1024).decode('utf8'))
 except:
     print("connection failed")

@@ -19,7 +19,7 @@ try:
     # Lắng nghe tối đa 1 kết nối đồng thời
     s.listen(1)
 
-    # Sử dụng vòng while là True để luôn chạy
+    # Sử dụng vòng while là True để luôn chạy,
     # để lắng nghe kết nối từ Client
     while True:
         client_socket,client_address = s.accept()
